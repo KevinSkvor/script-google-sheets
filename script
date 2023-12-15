@@ -1,0 +1,35 @@
+function transferData() {
+  // Get the source and destination spreadsheets
+  var sourceSpreadsheet = SpreadsheetApp.openById("1VBVryoKpc3yXREK5GvxqKlDtKzD1tk6Nae-zGUmGSgY");
+  var destinationSpreadsheet = SpreadsheetApp.openById("1P4K1kTpYOEkZ7iaDxk-R36k2mvNurcP-ZHI5xO9bido");
+
+  // Get the source and destination sheets
+  var sourceSheetName = "REGISTRO";
+  var destinationSheetName = "REGISTRO";
+  var sourceSheet = sourceSpreadsheet.getSheetByName(sourceSheetName);
+  var destinationSheet = destinationSpreadsheet.getSheetByName(destinationSheetName);
+
+  // Get the data from the source sheet if the 150th row has data
+  if (sourceSheet.getRange("150:150").isBlank()) {
+    Logger.log("No data in the 150th row of the source sheet.");
+    return;
+  }
+
+  var sourceData = sourceSheet.getRange(2, 1, 4, sourceSheet.getLastColumn()).getValues();
+
+
+  // Get the data from the destination sheet
+  var destinationData = destinationSheet.getDataRange().getValues();
+
+  // Append the new data to the existing data
+  var newData = destinationData.slice(1); // Exclude the first row
+  for (var i = 0; i < sourceData.length; i++) {
+    newData.push(sourceData[i]);
+  }
+
+  // Clear the destination sheet and paste the new data
+  destinationSheet.getRange(2, 1, newData.length, newData[0].length).setValues(newData);
+
+  // Delete the transferred rows from the source sheet
+  sourceSheet.deleteRows(2, 4);
+}
